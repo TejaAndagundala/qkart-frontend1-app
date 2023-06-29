@@ -4,7 +4,7 @@ import { Box } from "@mui/system";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom"
 import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
