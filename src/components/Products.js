@@ -17,7 +17,7 @@ import ProductCard from "./ProductCard";
 
 const Products = () => {
   const { enqueueSnackbar } = useSnackbar();
-  //const [items, setItems] = useState([]);
+ 
   const [loading, setLoading] = useState(false);
   const [debounceTimeout, setDebounceTimeout] = useState(0);
   const [products, setProducts] = useState([]);
