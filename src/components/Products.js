@@ -89,12 +89,13 @@ const Products = () => {
     
        let items = await fetchCart(token) 
            // console.log(items)
+           if(token)
         setItems(generateCartItemsFrom(items, response.data))
         return response.data;
       } catch (e) {
        setLoading(false);
  
-       if (e.response && e.response.status === 500) {
+       if (e.response && e.response.status === 400) {
          enqueueSnackbar(e.response.data.message, { variant: "error" });
          return null;
        } else {
@@ -256,19 +257,19 @@ const Products = () => {
    */
   const isItemInCart = (items, productId) => {
    // return items.some((item) => item.productId === productId);
-    // let isIn = false;
-    // items.forEach((item) => {
-    //   if (item.productId === productId) isIn = true;
-    // });
-    // return isIn;
-   let productItem = false;
-   items.forEach((item) => {
-    if(item.productId === productId) {
-      productItem = true
-      enqueueSnackbar("Item already in cart. Use the cart sidebar to update quantity or remove item." ,{variant: "warning"})
-    }
-   })
-   return productItem;
+  //  let productItem = false;
+  //  items.forEach((item) => {
+  //   if(item.productId === productId)
+  //     productItem = true
+  //     //enqueueSnackbar("Item already in cart. Use the cart sidebar to update quantity or remove item." ,{variant: "warning"})
+    
+  //  })
+  //  return productItem;
+  let isIn = false;
+  items.forEach((item) => {
+    if (item.productId === productId) isIn = true;
+  });
+  return isIn;
   };
 
   /**
@@ -313,14 +314,15 @@ const Products = () => {
     products,
     productId,
     qty,
-    options =  { preventDuplicate: true }
+    options =  { preventDuplicate: false }
   ) => {
     try {
-      // if(options.preventDuplicate) {
-      //   if(isItemInCart(items, productId)) {
-           enqueueSnackbar("Item already in cart. Use the cart sidebar to update quantity or remove item." ,{variant: "warning"})
-      //     return
-      //   }
+      
+      if(!options.preventDuplicate && isItemInCart(items, productId)) {
+        
+          enqueueSnackbar("Item already in cart. Use the cart sidebar to update quantity or remove item." ,{variant: "warning"})
+          return;  
+  }
       // }
       let response = await axios.post(`${config.endpoint}/cart`, {
         productId: productId,
@@ -332,18 +334,18 @@ const Products = () => {
       })  
      setItems(generateCartItemsFrom(response.data, products))
     }catch (e) {
-     // console.log(e)
-  //    if (e.response && e.response.status === 400) {
-  //     enqueueSnackbar(e.response.data.message, { variant: "error" });
-  // } else {
-  //     enqueueSnackbar(
-  //         "Could not fetch cart details. Check that the backend is running, reachable and returns valid JSON.",
-  //         {
-  //             variant: "error",
-  //         }
-  //     );
-  // }
-  // return null;
+    // console.log(e)
+     if (e.response && e.response.status === 400) {
+      enqueueSnackbar(e.response.data.message, { variant: "error" });
+  } else {
+      enqueueSnackbar(
+          "Could not fetch cart details. Check that the backend is running, reachable and returns valid JSON.",
+          {
+              variant: "error",
+          }
+      );
+  }
+  return null;
     }
   };
 
@@ -418,7 +420,7 @@ const Products = () => {
                           productId, 
                           qty,
                           {
-                            preventDuplicate: true,
+                            preventDuplicate: false,
                           }
                         );
                       }} 
